@@ -37,3 +37,8 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Ignore HTML output of Rmd files since it is so big with 3Dmol
+*.html
+
+
