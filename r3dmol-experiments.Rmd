@@ -1,0 +1,54 @@
+---
+title: "Experiments with r3dmol"
+author: "Elliot Hershberg"
+date: "2/20/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(r3dmol)
+```
+
+## Basic example from the package description
+
+```{r}
+r3dmol() %>%
+  m_add_model(data = pdb_6zsl, format = "pdb") %>%
+  m_zoom_to() %>%
+  m_set_style(style = m_style_cartoon(color = 'spectrum'))
+```
+
+## Using local data of Sars-CoV-2 Spike Protein
+
+```{r}
+r3dmol() %>%
+  m_add_model(data = "pdb_6vxx.pdb", format = "pdb") %>%
+  m_set_style(style = m_style_cartoon()) %>%
+  m_zoom_to()
+```
+
+## Selections
+
+```{r}
+spike_model <- r3dmol() %>%
+  m_add_model(data = "pdb_6vxx.pdb", format = "pdb") %>%
+  m_set_style(style = m_style_cartoon()) %>%
+  m_zoom_to()
+
+spike_model %>%
+  m_add_style(
+    style = c(
+      m_style_stick(),
+      m_style_sphere(scale = 0.3)
+    ),
+    sel = m_sel(resi = 1:10)
+  )
+```
+
+
