@@ -1,0 +1,152 @@
+---
+title: "Sars-CoV-2 Spike Mutations"
+author: "Elliot Hershberg"
+date: "2/21/2021"
+output: html_document
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(JBrowseR)
+library(r3dmol)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r context="data", message=FALSE}
+mutation_data <- read_tsv("spike-mutations.tsv")
+```
+
+## Introduction
+
+This is an interactive Shiny document intended to provide useful ways to reason about data concerning mutations
+to the Sars-CoV-2 spike glycoprotein.
+Understanding the functional significance of these new mutations is crucial for genomic epidemiology
+and vaccine development.
+
+## Spike Mutation Data
+
+Below is a table of mutations to the spike protein curated by [Dr. Emma Hodcroft](https://twitter.com/firefoxx66):
+
+```{r}
+DT::dataTableOutput("mutationsTable")
+```
+
+```{r, context="server"}
+output$mutationsTable <- DT::renderDataTable(
+  {
+    mutation_data
+  },
+  selection = "single",
+  options = list(
+    columnDefs = list(list(className = "dt-center", targets = "_all"))
+  )
+)
+
+# set up event listener on table selection
+table_selection <- reactive({
+  mutation_data[input$mutationsTable_rows_selected, ]
+})
+```
+
+## Browsing Genomic Context
+
+This is an interactive JBrowse 2 genome browser embedded using the [JBrowseR](https://elliothershberg.github.io/JBrowseR/) package.
+Clicking on one of the mutations in the table above will navigate to that location in the browser.
+
+```{r}
+JBrowseROutput("browserOutput")
+```
+
+```{r, context="server"}
+# create the necessary JB2 assembly configuration
+assembly <- assembly(
+  "https://jbrowse.org/genomes/sars-cov2/fasta/sars-cov2.fa.gz",
+  bgzip = TRUE
+)
+
+# create configuration for a JB2 GFF FeatureTrack
+annotations_track <- track_feature(
+  "https://jbrowse.org/genomes/sars-cov2/sars-cov2-annotations.sorted.gff.gz",
+  assembly
+)
+
+# create the tracks array to pass to browser
+tracks <- tracks(
+  annotations_track
+)
+
+# set up the default session for the browser
+default_session <- default_session(
+  assembly,
+  c(annotations_track)
+)
+
+theme <- theme("#5da8a3", "#333")
+
+location <- reactive({
+  print(table_selection())
+  if (is.na(table_selection()$chrom_start[1])) {
+    "NC_045512.2:1..100"
+  } else {
+    str_glue(
+      "NC_045512.2:",
+      "{table_selection()$chrom_start}",
+      "..",
+      "{table_selection()$chrom_end}"
+    )
+  }
+})
+
+
+# link the UI with the browser widget
+output$browserOutput <- renderJBrowseR(
+  JBrowseR(
+    "View",
+    assembly = assembly,
+    tracks = tracks,
+    location = location(),
+    defaultSession = default_session,
+    theme = theme
+  )
+)
+```
+
+## Exploring Protein Structure
+
+Here is an embedded interactive [3Dmol.js](https://3dmol.csb.pitt.edu/) protein model of the (closed state)
+Sars-CoV-2 spike glycoprotein from [PDB](https://www.rcsb.org/structure/6vxx).
+It was created using the [r3dmol](https://swsoyee.github.io/r3dmol/) package.
+The model can be dragged, and zoomed.
+When a row is selected in the table of mutations above, the stick model for that residue will be activated.
+Give it a try!
+
+```{r}
+r3dmolOutput("spikeProtein")
+```
+
+```{r, context="server"}
+output$spikeProtein <- renderR3dmol(
+  spike_model <- r3dmol() %>%
+    m_add_model(data = m_fetch_pdb("6vxx"), format = "pdb") %>%
+    m_set_style(style = m_style_cartoon()) %>%
+    m_add_style(
+      style = c(
+        m_style_stick(),
+        m_style_sphere(scale = 0.3)
+      ),
+      sel = m_sel(
+        resi = table_selection()$mutation_pos
+      )
+    ) %>%
+    m_zoom_to()
+)
+```
+
+## Conclusion
+
+This document provides a demonstration of how Shiny and R Markdown can be used together
+with dynamic visualization libraries to communicate scientific results interactively.
+Perhaps in the future it will be commonplace for genomics articles to contain interactive
+genome browsers displaying the direct read support for their findings!
+
