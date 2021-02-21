@@ -1,0 +1,33 @@
+---
+title: "Clean Spike Mutation Data"
+author: "Elliot Hershberg"
+date: "2/20/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r echo=FALSE}
+library(tidyverse)
+```
+
+I want to just get the start and end genomic coordinates, and the mutation information.
+
+The mutation is in the form of: amino acid, position, substitution.
+
+```{r}
+spike_mutations <- read_tsv("spikeMuts.bed", col_names = FALSE) %>%
+  select(
+    chrom_start = X2,
+    chrom_end = X3,
+    mutation = X4
+  )
+
+spike_mutations
+```
+
+```{r}
+write_tsv(spike_mutations, "spike-mutations.tsv")
+```
+
+
