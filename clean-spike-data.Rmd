@@ -26,6 +26,28 @@ spike_mutations <- read_tsv("spikeMuts.bed", col_names = FALSE) %>%
 spike_mutations
 ```
 
+I'm going to break up the mutation column.
+
+```{r}
+spike_mutations <- spike_mutations %>%
+  mutate(
+    mutation_aa = str_sub(mutation, 1, 1),
+    mutation_pos = if_else(
+      str_ends(mutation, "[0123456789]"),
+      str_sub(mutation, 2, nchar(mutation)),
+      str_sub(mutation, 2, nchar(mutation) - 1)
+    ),
+    mutation_sub = if_else(
+      str_ends(mutation, "[0123456789]"),
+      "",
+      str_sub(mutation, nchar(mutation), nchar(mutation))
+    )
+  ) %>%
+  select(-mutation)
+```
+
+
+
 ```{r}
 write_tsv(spike_mutations, "spike-mutations.tsv")
 ```
