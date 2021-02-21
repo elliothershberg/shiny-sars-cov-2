@@ -47,8 +47,15 @@ spike_model %>%
       m_style_stick(),
       m_style_sphere(scale = 0.3)
     ),
-    sel = m_sel(resi = 1:10)
-  )
+    sel = m_sel(
+      resi = 69,
+      resn = "HIS"
+    )
+  ) %>%
+  m_zoom_to(sel = m_sel(
+      resi = 69,
+      resn = "HIS"
+    ))
 ```
 
 
