@@ -37,7 +37,7 @@ r3dmol() %>%
 
 ```{r}
 spike_model <- r3dmol() %>%
-  m_add_model(data = "pdb_6vxx.pdb", format = "pdb") %>%
+  m_add_model(data = m_fetch_pdb("6vxx"), format = "pdb") %>%
   m_set_style(style = m_style_cartoon()) %>%
   m_zoom_to()
 
