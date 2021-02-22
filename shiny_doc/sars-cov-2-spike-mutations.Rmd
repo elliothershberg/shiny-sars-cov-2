@@ -71,9 +71,15 @@ annotations_track <- track_feature(
   assembly
 )
 
+mutations_track <- track_feature(
+  "https://jbrowse.org/genomes/sars-cov2/data/sars-cov2-spike-mutations.gff3.gz",
+  assembly
+)
+
 # create the tracks array to pass to browser
 tracks <- tracks(
-  annotations_track
+  annotations_track,
+  mutations_track
 )
 
 # set up the default session for the browser
@@ -147,6 +153,14 @@ output$spikeProtein <- renderR3dmol(
 
 This document provides a demonstration of how Shiny and R Markdown can be used together
 with dynamic visualization libraries to communicate scientific results interactively.
+Importantly, this type of interactive data visualization doesn't require hundreds of
+lines of JavaScript. 
+Instead, it can be done with <100 lines of R code!
+Check out the source code for this document 
+[here](https://github.com/elliothershberg/shiny-sars-cov-2/blob/main/shiny_doc/sars-cov-2-spike-mutations.Rmd)
+
+In order to be more widely used by publications, more infrastructure efforts such as eLife's 
+[reproducible article](https://elifesciences.org/labs/ad58f08d/introducing-elife-s-first-computationally-reproducible-article) will need to take place in biomedical journals.
 Perhaps in the future it will be commonplace for genomics articles to contain interactive
 genome browsers displaying the direct read support for their findings!
 
