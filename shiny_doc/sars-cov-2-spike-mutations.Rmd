@@ -55,7 +55,10 @@ This is an interactive JBrowse 2 genome browser embedded using the [JBrowseR](ht
 Clicking on one of the mutations in the table above will navigate to that location in the browser.
 
 ```{r}
-JBrowseROutput("browserOutput")
+tags$div(
+  JBrowseROutput("browserOutput"),
+  style = "overflow: auto;"
+)
 ```
 
 ```{r, context="server"}
