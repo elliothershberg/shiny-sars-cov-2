@@ -51,14 +51,11 @@ table_selection <- reactive({
 
 ## Browsing Genomic Context
 
-This is an interactive JBrowse 2 genome browser embedded using the [JBrowseR](https://elliothershberg.github.io/JBrowseR/) package.
+This is an interactive JBrowse 2 genome browser embedded using the [JBrowseR](https://gmod.github.io/JBrowseR/) package.
 Clicking on one of the mutations in the table above will navigate to that location in the browser.
 
 ```{r}
-tags$div(
-  JBrowseROutput("browserOutput"),
-  style = "overflow: auto;"
-)
+JBrowseROutput("browserOutput")
 ```
 
 ```{r, context="server"}
