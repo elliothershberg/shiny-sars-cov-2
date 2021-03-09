@@ -66,10 +66,10 @@ assembly <- assembly(
 )
 
 # create configuration for a JB2 GFF FeatureTrack
-annotations_track <- track_feature(
-  "https://jbrowse.org/genomes/sars-cov2/sars-cov2-annotations.sorted.gff.gz",
-  assembly
-)
+# annotations_track <- track_feature(
+#   "https://jbrowse.org/genomes/sars-cov2/sars-cov2-annotations.sorted.gff.gz",
+#   assembly
+# )
 
 mutations_track <- track_feature(
   "https://jbrowse.org/genomes/sars-cov2/data/sars-cov2-spike-mutations.gff3.gz",
@@ -78,14 +78,13 @@ mutations_track <- track_feature(
 
 # create the tracks array to pass to browser
 tracks <- tracks(
-  annotations_track,
   mutations_track
 )
 
 # set up the default session for the browser
 default_session <- default_session(
   assembly,
-  c(annotations_track)
+  c(mutations_track)
 )
 
 theme <- theme("#5da8a3", "#333")
